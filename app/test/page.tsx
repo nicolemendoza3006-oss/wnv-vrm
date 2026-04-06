@@ -523,7 +523,11 @@ export default function TestPage() {
   }
 
   async function repeatTestSequence() {
-    if (screen === "VRM_V" && currentShownV.length > 0 && (phaseV === "TEST_SHOW" || phaseV === "TEST_INPUT")) {
+    if (
+      screen === "VRM_V" &&
+      currentShownV.length > 0 &&
+      (phaseV === "TEST_SHOW" || phaseV === "TEST_INPUT")
+    ) {
       setCanClickV(false);
       setInputV([]);
       await showSequence(currentShownV);
@@ -532,7 +536,11 @@ export default function TestPage() {
       setCanClickV(true);
     }
 
-    if (screen === "VRM_R" && currentShownR.length > 0 && (phaseR === "TEST_SHOW" || phaseR === "TEST_INPUT")) {
+    if (
+      screen === "VRM_R" &&
+      currentShownR.length > 0 &&
+      (phaseR === "TEST_SHOW" || phaseR === "TEST_INPUT")
+    ) {
       setCanClickR(false);
       setInputR([]);
       await showSequence(currentShownR);
@@ -918,7 +926,11 @@ export default function TestPage() {
 
     const result: AttemptRow[] = [];
     for (let taskNo = 1; taskNo <= 8; taskNo++) {
-      for (let attemptNo: 1 | 2 = 1; attemptNo <= 2; attemptNo = (attemptNo + 1) as 1 | 2) {
+      for (
+        let attemptNo: 1 | 2 = 1;
+        attemptNo <= 2;
+        attemptNo = (attemptNo + 1) as 1 | 2
+      ) {
         const key = `${taskNo}-${attemptNo}`;
         const row = byKey.get(key);
         result.push(
