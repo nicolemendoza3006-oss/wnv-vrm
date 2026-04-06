@@ -39,7 +39,6 @@ export default function AgePage() {
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-
     const updateTheme = () => setIsDark(media.matches);
 
     updateTheme();
@@ -86,8 +85,6 @@ export default function AgePage() {
 
   const theme = isDark
     ? {
-        pageBg:
-          "linear-gradient(180deg, #0f172a 0%, #172033 35%, #241b2f 65%, #111827 100%)",
         text: "#f8fafc",
         subText: "rgba(248,250,252,0.78)",
         cardBg: "rgba(17,24,39,0.88)",
@@ -101,8 +98,6 @@ export default function AgePage() {
         smallShadow: "0 10px 0 rgba(0,0,0,0.22)",
       }
     : {
-        pageBg:
-          "linear-gradient(180deg, #bfe9ff 0%, #ffe7b8 35%, #ffd1dc 60%, #fff6d6 85%, #ffffff 100%)",
         text: "#1b1b1b",
         subText: "rgba(0,0,0,0.65)",
         cardBg: "rgba(255,255,255,0.78)",
@@ -118,13 +113,13 @@ export default function AgePage() {
 
   return (
     <main
+      className="wnv-bg"
       style={{
         minHeight: "100vh",
         padding: 24,
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        backgroundImage: theme.pageBg,
         color: theme.text,
       }}
     >
@@ -318,4 +313,5 @@ export default function AgePage() {
       </div>
     </main>
   );
+}
 }
