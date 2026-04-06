@@ -15,7 +15,7 @@ type VrmPhase =
   | "FINISHED";
 
 type AttemptRow = {
-  taskNo: number; // 1..8
+  taskNo: number;
   attemptNo: 1 | 2;
   shown: number[];
   answer: number[];
@@ -36,12 +36,14 @@ function CubeButton({
   disabled,
   onClick,
   showDebugNumber,
+  isDark,
 }: {
-  id: number; // intern 1..10
+  id: number;
   highlighted?: boolean;
   disabled?: boolean;
   onClick: (id: number) => void;
   showDebugNumber?: boolean;
+  isDark: boolean;
 }) {
   return (
     <button
@@ -50,8 +52,8 @@ function CubeButton({
       disabled={disabled}
       aria-label={`Button ${id}`}
       style={{
-        width: 78,
-        height: 78,
+        width: "clamp(54px, 7vw, 78px)",
+        height: "clamp(54px, 7vw, 78px)",
         border: "none",
         background: "transparent",
         padding: 0,
@@ -70,9 +72,11 @@ function CubeButton({
             : "linear-gradient(180deg, #4fb1ff 0%, #167dff 55%, #0b55d8 100%)",
           border: highlighted
             ? "2px solid rgba(255,255,255,0.85)"
+            : isDark
+            ? "2px solid rgba(255,255,255,0.10)"
             : "2px solid rgba(0,0,0,0.12)",
           boxShadow: highlighted
-            ? "0 0 0 6px rgba(255,255,255,0.45), 0 16px 0 rgba(0,0,0,0.16), 0 26px 40px rgba(0,0,0,0.22)"
+            ? "0 0 0 6px rgba(255,255,255,0.30), 0 16px 0 rgba(0,0,0,0.16), 0 26px 40px rgba(0,0,0,0.22)"
             : "0 16px 0 rgba(0,0,0,0.16), 0 26px 40px rgba(0,0,0,0.22)",
           position: "relative",
           transform: highlighted ? "translateY(-2px)" : "translateY(0px)",
@@ -115,43 +119,17 @@ function CubeButton({
   );
 }
 
-/** Gemeinsame Aufgabenliste (VRM-V). VRM-R nutzt pro Aufgabe die Versuche getauscht. */
 const TASKS_V: number[][][] = [
-  [
-    [3, 10],
-    [7, 4],
-  ],
-  [
-    [1, 9, 3],
-    [8, 2, 7],
-  ],
-  [
-    [4, 9, 1, 6],
-    [10, 6, 2, 7],
-  ],
-  [
-    [6, 5, 1, 4, 8],
-    [5, 7, 9, 8, 2],
-  ],
-  [
-    [4, 1, 9, 3, 8, 10],
-    [9, 2, 6, 7, 3, 5],
-  ],
-  [
-    [10, 1, 6, 4, 8, 5, 7],
-    [2, 6, 3, 8, 2, 10, 1],
-  ],
-  [
-    [7, 3, 10, 5, 7, 8, 4, 9],
-    [6, 9, 3, 2, 1, 7, 10, 5],
-  ],
-  [
-    [5, 8, 4, 10, 7, 3, 1, 9, 6],
-    [8, 2, 6, 1, 10, 3, 7, 4, 9],
-  ],
+  [[3, 10], [7, 4]],
+  [[1, 9, 3], [8, 2, 7]],
+  [[4, 9, 1, 6], [10, 6, 2, 7]],
+  [[6, 5, 1, 4, 8], [5, 7, 9, 8, 2]],
+  [[4, 1, 9, 3, 8, 10], [9, 2, 6, 7, 3, 5]],
+  [[10, 1, 6, 4, 8, 5, 7], [2, 6, 3, 8, 2, 10, 1]],
+  [[7, 3, 10, 5, 7, 8, 4, 9], [6, 9, 3, 2, 1, 7, 10, 5]],
+  [[5, 8, 4, 10, 7, 3, 1, 9, 6], [8, 2, 6, 1, 10, 3, 7, 4, 9]],
 ];
 
-// =================== Canvas-Raketen-Feuerwerk ===================
 type Rocket = {
   x: number;
   y: number;
@@ -168,7 +146,7 @@ type Spark = {
   y: number;
   vx: number;
   vy: number;
-  life: number; // 0..1
+  life: number;
   decay: number;
   size: number;
   hue: number;
@@ -211,9 +189,9 @@ function RocketsFireworksOverlay() {
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, W(), H());
       const g = ctx.createLinearGradient(0, 0, 0, H());
-      g.addColorStop(0, "rgba(0,0,0,0.35)");
-      g.addColorStop(0.55, "rgba(0,0,0,0.18)");
-      g.addColorStop(1, "rgba(0,0,0,0.08)");
+      g.addColorStop(0, "rgba(0,0,0,0.45)");
+      g.addColorStop(0.55, "rgba(0,0,0,0.22)");
+      g.addColorStop(1, "rgba(0,0,0,0.12)");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W(), H());
     };
@@ -239,7 +217,7 @@ function RocketsFireworksOverlay() {
           vx: Math.cos(ang) * sp,
           vy: Math.sin(ang) * sp,
           life: 1,
-          decay: rand(0.010, 0.018),
+          decay: rand(0.01, 0.018),
           size: rand(1.8, 3.4),
           hue: hue + rand(-20, 20),
         });
@@ -249,7 +227,7 @@ function RocketsFireworksOverlay() {
     const spawnRocket = () => {
       const x = rand(W() * 0.12, W() * 0.88);
       const y = H() + rand(40, 120);
-      const targetY = rand(H() * 0.10, H() * 0.40);
+      const targetY = rand(H() * 0.1, H() * 0.4);
 
       rockets.push({
         x,
@@ -263,7 +241,6 @@ function RocketsFireworksOverlay() {
       });
     };
 
-    // Start: direkt mehrere Raketen
     spawnRocket();
     spawnRocket();
     spawnRocket();
@@ -276,16 +253,13 @@ function RocketsFireworksOverlay() {
 
       drawNight();
 
-      // nur in den ersten ~2.2s spawnen
       if (now - t0 < 2200 && now - lastSpawn > 220) {
         lastSpawn = now;
         spawnRocket();
       }
 
-      // Additives Blending
       ctx.globalCompositeOperation = "lighter";
 
-      // Rockets
       for (let i = rockets.length - 1; i >= 0; i--) {
         const r = rockets[i];
         if (!r.alive) {
@@ -299,43 +273,35 @@ function RocketsFireworksOverlay() {
         r.trail.unshift({ x: r.x, y: r.y });
         if (r.trail.length > 34) r.trail.pop();
 
-        // Spur
         if (r.trail.length > 2) {
           ctx.lineWidth = 3.6;
           ctx.lineCap = "round";
           ctx.strokeStyle = `hsla(${r.hue},100%,65%,0.55)`;
           ctx.beginPath();
-          ctx.moveTo(
-            r.trail[r.trail.length - 1].x,
-            r.trail[r.trail.length - 1].y
-          );
+          ctx.moveTo(r.trail[r.trail.length - 1].x, r.trail[r.trail.length - 1].y);
           for (let k = r.trail.length - 2; k >= 0; k--) {
             ctx.lineTo(r.trail[k].x, r.trail[k].y);
           }
           ctx.stroke();
         }
 
-        // Raketen-Kopf
-        glow(r.x, r.y, 3.0, r.hue, 0.9);
+        glow(r.x, r.y, 3, r.hue, 0.9);
         ctx.fillStyle = `hsla(${r.hue},100%,78%,1)`;
         ctx.beginPath();
         ctx.ellipse(r.x, r.y, 2.4, 7.2, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Explosion oben
         if (r.y <= r.targetY) {
           explode(r.x, r.y, r.hue);
           r.alive = false;
         }
       }
 
-      // Sparks
       for (let i = sparks.length - 1; i >= 0; i--) {
         const p = sparks[i];
         p.x += p.vx;
         p.y += p.vy;
 
-        // Gravity + drag
         p.vy += 0.09;
         p.vx *= 0.985;
         p.vy *= 0.985;
@@ -343,7 +309,6 @@ function RocketsFireworksOverlay() {
         p.life -= p.decay;
         const a = Math.max(0, p.life);
 
-        // Funken-Strahl
         ctx.lineWidth = p.size;
         ctx.lineCap = "round";
         ctx.strokeStyle = `hsla(${p.hue},100%,70%,${a})`;
@@ -382,22 +347,63 @@ function RocketsFireworksOverlay() {
     </div>
   );
 }
-// ===============================================================
 
 export default function TestPage() {
   const [screen, setScreen] = useState<Screen>("MENU");
   const [showDebugNumber, setShowDebugNumber] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
-  // Board layout (MUSS so bleiben)
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateTheme = () => setIsDark(media.matches);
+    updateTheme();
+    media.addEventListener("change", updateTheme);
+    return () => media.removeEventListener("change", updateTheme);
+  }, []);
+
+  const theme = isDark
+    ? {
+        text: "#f8fafc",
+        subText: "rgba(248,250,252,0.72)",
+        softText: "rgba(248,250,252,0.82)",
+        chipBg: "rgba(15,23,42,0.82)",
+        chipBorder: "1px solid rgba(255,255,255,0.10)",
+        cardBg: "rgba(17,24,39,0.88)",
+        cardBorder: "2px solid rgba(255,255,255,0.08)",
+        innerBg: "rgba(30,41,59,0.88)",
+        buttonBg: "rgba(30,41,59,0.94)",
+        boardBg: "rgba(15,23,42,0.92)",
+        shadow: "0 14px 0 rgba(0,0,0,0.25), 0 22px 36px rgba(0,0,0,0.35)",
+        smallShadow: "0 10px 0 rgba(0,0,0,0.20)",
+        overlayBg: "rgba(0,0,0,0.35)",
+        tableBorder: "rgba(255,255,255,0.10)",
+        emptyText: "rgba(248,250,252,0.38)",
+      }
+    : {
+        text: "#1b1b1b",
+        subText: "rgba(0,0,0,0.65)",
+        softText: "rgba(0,0,0,0.75)",
+        chipBg: "rgba(255,255,255,0.75)",
+        chipBorder: "1px solid rgba(0,0,0,0.10)",
+        cardBg: "rgba(255,255,255,0.86)",
+        cardBorder: "2px solid rgba(0,0,0,0.10)",
+        innerBg: "rgba(255,255,255,0.90)",
+        buttonBg: "rgba(255,255,255,0.90)",
+        boardBg: "rgba(255,255,255,0.92)",
+        shadow: "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
+        smallShadow: "0 10px 0 rgba(0,0,0,0.10)",
+        overlayBg: "rgba(255,255,255,0.25)",
+        tableBorder: "rgba(0,0,0,0.10)",
+        emptyText: "rgba(0,0,0,0.35)",
+      };
+
   const positions = [
     { id: 1, left: 18, top: 16 },
     { id: 2, left: 45, top: 28 },
     { id: 6, left: 63, top: 16 },
     { id: 7, left: 83, top: 22 },
-
     { id: 3, left: 22, top: 44 },
     { id: 8, left: 78, top: 44 },
-
     { id: 4, left: 8, top: 68 },
     { id: 5, left: 30, top: 76 },
     { id: 9, left: 68, top: 68 },
@@ -413,18 +419,15 @@ export default function TestPage() {
       ? "VRM-R"
       : "Ergebnisse";
 
-  // UI overlays
   const [highlighted, setHighlighted] = useState<number | null>(null);
   const [thumbOverlay, setThumbOverlay] = useState(false);
   const [handOverlay, setHandOverlay] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
 
-  // ========= Helpers =========
   function sleep(ms: number) {
     return new Promise<void>((resolve) => setTimeout(resolve, ms));
   }
 
-  // ✅ Präsentations-Sperre (sofort, ohne Render-Lag)
   const presentingRef = useRef(false);
   const [presenting, setPresenting] = useState(false);
 
@@ -435,7 +438,6 @@ export default function TestPage() {
 
   const seqLockRef = useRef(0);
 
-  // Leuchten 1s, Pause 1s
   async function showSequence(seq: number[]) {
     const token = ++seqLockRef.current;
     setPresentingSafe(true);
@@ -482,21 +484,15 @@ export default function TestPage() {
     return true;
   }
 
-  /**
-   * VRM-V/VRM-R Abbruchregel: beide Versuche falsch
-   */
   const outcomeVRef = useRef<Record<number, { a1?: 0 | 1; a2?: 0 | 1 }>>({});
   const outcomeRRef = useRef<Record<number, { a1?: 0 | 1; a2?: 0 | 1 }>>({});
 
-  // ========= VRM-V State =========
   const [phaseV, setPhaseV] = useState<VrmPhase>("IDLE");
   const [msgV, setMsgV] = useState("");
   const [canClickV, setCanClickV] = useState(false);
-
   const [currentShownV, setCurrentShownV] = useState<number[]>([]);
   const [currentExpectedV, setCurrentExpectedV] = useState<number[]>([]);
   const [inputV, setInputV] = useState<number[]>([]);
-
   const [practiceIndexV, setPracticeIndexV] = useState(0);
   const [taskIndexV, setTaskIndexV] = useState(0);
   const [attemptIndexV, setAttemptIndexV] = useState<0 | 1>(0);
@@ -508,31 +504,25 @@ export default function TestPage() {
     [5, 8],
   ];
 
-  // ========= VRM-R State =========
   const [phaseR, setPhaseR] = useState<VrmPhase>("IDLE");
   const [msgR, setMsgR] = useState("");
   const [canClickR, setCanClickR] = useState(false);
-
   const [currentShownR, setCurrentShownR] = useState<number[]>([]);
   const [currentExpectedR, setCurrentExpectedR] = useState<number[]>([]);
   const [inputR, setInputR] = useState<number[]>([]);
-
   const [practiceIndexR, setPracticeIndexR] = useState(0);
   const [taskIndexR, setTaskIndexR] = useState(0);
   const [attemptIndexR, setAttemptIndexR] = useState<0 | 1>(0);
   const [rowsR, setRowsR] = useState<AttemptRow[]>([]);
 
-  // VRM-R: Beispiel 10-1, Übung Ü1 5-8, Ü2 1-6
   const VRMR_EXAMPLE = [10, 1];
   const VRMR_PRACTICE = [
     [5, 8],
     [1, 6],
   ];
 
-  // VRM-R: Versuche getauscht
   const TASKS_R = useMemo(() => TASKS_V.map((pair) => [pair[1], pair[0]]), []);
 
-  // ========= VRM-V runners =========
   async function startVRMV() {
     seqLockRef.current++;
     outcomeVRef.current = {};
@@ -614,7 +604,6 @@ export default function TestPage() {
       const pointsAttempt: 0 | 1 = correct ? 1 : 0;
 
       void (async () => {
-        // ✅ Beispiel: falsch -> ✋ -> Sequenz erneut zeigen -> erneut eingeben
         if (phaseV === "EXAMPLE_TESTER_CLICK") {
           if (correct) {
             await flashThumb();
@@ -629,15 +618,12 @@ export default function TestPage() {
             await showSequence(currentShownV);
 
             setPhaseV("EXAMPLE_TESTER_CLICK");
-            setMsgV(
-              "Nochmal: Bitte dieselben Würfel vorwärts klicken (Beispiel)."
-            );
+            setMsgV("Nochmal: Bitte dieselben Würfel vorwärts klicken (Beispiel).");
             setCanClickV(true);
           }
           return;
         }
 
-        // ✅ Übung: falsch -> ✋ -> Übung erneut zeigen -> erneut eingeben
         if (phaseV === "PRACTICE_INPUT") {
           if (correct) {
             await flashThumb();
@@ -664,7 +650,6 @@ export default function TestPage() {
           return;
         }
 
-        // ✅ TEST: IMMER 👍 nach jedem Versuch
         if (phaseV === "TEST_INPUT") {
           await flashThumb();
 
@@ -706,9 +691,7 @@ export default function TestPage() {
           const anyCorrect = a1 + a2 >= 1;
 
           if (!anyCorrect) {
-            await finishVRMV(
-              "VRM-V beendet (Abbruchregel: beide Versuche falsch)."
-            );
+            await finishVRMV("VRM-V beendet (Abbruchregel: beide Versuche falsch).");
             return;
           }
 
@@ -728,7 +711,6 @@ export default function TestPage() {
     });
   }
 
-  // ========= VRM-R runners =========
   async function startVRMR() {
     seqLockRef.current++;
     outcomeRRef.current = {};
@@ -783,9 +765,7 @@ export default function TestPage() {
     await showSequence(shown);
 
     setPhaseR("TEST_INPUT");
-    setMsgR(
-      `Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1}: Bitte rückwärts nachklicken.`
-    );
+    setMsgR(`Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1}: Bitte rückwärts nachklicken.`);
     setCanClickR(true);
   }
 
@@ -812,7 +792,6 @@ export default function TestPage() {
       const pointsAttempt: 0 | 1 = correct ? 1 : 0;
 
       void (async () => {
-        // ✅ Beispiel: falsch -> ✋ -> Sequenz erneut zeigen -> erneut eingeben
         if (phaseR === "EXAMPLE_TESTER_CLICK") {
           if (correct) {
             await flashThumb();
@@ -827,15 +806,12 @@ export default function TestPage() {
             await showSequence(currentShownR);
 
             setPhaseR("EXAMPLE_TESTER_CLICK");
-            setMsgR(
-              "Nochmal: Bitte dieselben Würfel rückwärts klicken (Beispiel)."
-            );
+            setMsgR("Nochmal: Bitte dieselben Würfel rückwärts klicken (Beispiel).");
             setCanClickR(true);
           }
           return;
         }
 
-        // ✅ Übung: falsch -> ✋ -> Übung erneut zeigen -> erneut eingeben
         if (phaseR === "PRACTICE_INPUT") {
           if (correct) {
             await flashThumb();
@@ -856,15 +832,12 @@ export default function TestPage() {
             await showSequence(currentShownR);
 
             setPhaseR("PRACTICE_INPUT");
-            setMsgR(
-              `Nochmal: Übung ${practiceIndexR + 1} bitte rückwärts nachklicken.`
-            );
+            setMsgR(`Nochmal: Übung ${practiceIndexR + 1} bitte rückwärts nachklicken.`);
             setCanClickR(true);
           }
           return;
         }
 
-        // ✅ TEST: IMMER 👍 nach jedem Versuch
         if (phaseR === "TEST_INPUT") {
           await flashThumb();
 
@@ -906,9 +879,7 @@ export default function TestPage() {
           const anyCorrect = a1 + a2 >= 1;
 
           if (!anyCorrect) {
-            await finishVRMR(
-              "VRM-R beendet (Abbruchregel: beide Versuche falsch)."
-            );
+            await finishVRMR("VRM-R beendet (Abbruchregel: beide Versuche falsch).");
             return;
           }
 
@@ -928,18 +899,13 @@ export default function TestPage() {
     });
   }
 
-  // ========= Results computation =========
   function buildTableRows(rows: AttemptRow[]) {
     const byKey = new Map<string, AttemptRow>();
     rows.forEach((r) => byKey.set(`${r.taskNo}-${r.attemptNo}`, r));
 
     const result: AttemptRow[] = [];
     for (let taskNo = 1; taskNo <= 8; taskNo++) {
-      for (
-        let attemptNo: 1 | 2 = 1;
-        attemptNo <= 2;
-        attemptNo = (attemptNo + 1) as 1 | 2
-      ) {
+      for (let attemptNo: 1 | 2 = 1; attemptNo <= 2; attemptNo = (attemptNo + 1) as 1 | 2) {
         const key = `${taskNo}-${attemptNo}`;
         const row = byKey.get(key);
         result.push(
@@ -958,18 +924,16 @@ export default function TestPage() {
 
   function taskPoints(rows16: AttemptRow[], taskNo: number) {
     const a1 =
-      rows16.find((r) => r.taskNo === taskNo && r.attemptNo === 1)
-        ?.pointsAttempt ?? 0;
+      rows16.find((r) => r.taskNo === taskNo && r.attemptNo === 1)?.pointsAttempt ?? 0;
     const a2 =
-      rows16.find((r) => r.taskNo === taskNo && r.attemptNo === 2)
-        ?.pointsAttempt ?? 0;
+      rows16.find((r) => r.taskNo === taskNo && r.attemptNo === 2)?.pointsAttempt ?? 0;
     return (a1 + a2) as 0 | 1 | 2;
   }
 
   function rohwertSum(rows16: AttemptRow[]) {
     let sum = 0;
     for (let t = 1; t <= 8; t++) sum += taskPoints(rows16, t);
-    return sum; // max 16
+    return sum;
   }
 
   function lvrm(rows16: AttemptRow[], tasksSource: number[][][]) {
@@ -978,7 +942,7 @@ export default function TestPage() {
       if (taskPoints(rows16, t) > 0) lastTaskWithPoint = t;
     }
     if (lastTaskWithPoint === 0) return 0;
-    return tasksSource[lastTaskWithPoint - 1][0].length; // max 9
+    return tasksSource[lastTaskWithPoint - 1][0].length;
   }
 
   const tableV = useMemo(() => buildTableRows(rowsV), [rowsV]);
@@ -989,9 +953,8 @@ export default function TestPage() {
 
   const sumV = useMemo(() => rohwertSum(tableV), [tableV]);
   const sumR = useMemo(() => rohwertSum(tableR), [tableR]);
-  const sumTotal = sumV + sumR; // max 32
+  const sumTotal = sumV + sumR;
 
-  // ========= UI helpers =========
   const boardClickable =
     !presenting &&
     ((screen === "VRM_V" && canClickV) || (screen === "VRM_R" && canClickR));
@@ -1006,12 +969,14 @@ export default function TestPage() {
 
   return (
     <main
+      className="wnv-bg"
       style={{
         minHeight: "100vh",
-        padding: 24,
+        padding: "clamp(12px, 3vw, 24px)",
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
+        color: theme.text,
       }}
     >
       <style>{`
@@ -1021,7 +986,6 @@ export default function TestPage() {
         }
       `}</style>
 
-      {/* 👍 Overlay */}
       {thumbOverlay ? (
         <div
           style={{
@@ -1031,13 +995,13 @@ export default function TestPage() {
             pointerEvents: "none",
             display: "grid",
             placeItems: "center",
-            background: "rgba(255,255,255,0.25)",
+            background: theme.overlayBg,
             backdropFilter: "blur(2px)",
           }}
         >
           <div
             style={{
-              fontSize: 220,
+              fontSize: "min(220px, 35vw)",
               filter: "drop-shadow(0 18px 28px rgba(0,0,0,0.35))",
               transform: "translateY(-8px)",
             }}
@@ -1047,7 +1011,6 @@ export default function TestPage() {
         </div>
       ) : null}
 
-      {/* ✋ Overlay */}
       {handOverlay ? (
         <div
           style={{
@@ -1057,13 +1020,13 @@ export default function TestPage() {
             pointerEvents: "none",
             display: "grid",
             placeItems: "center",
-            background: "rgba(255,255,255,0.25)",
+            background: theme.overlayBg,
             backdropFilter: "blur(2px)",
           }}
         >
           <div
             style={{
-              fontSize: 220,
+              fontSize: "min(220px, 35vw)",
               filter: "drop-shadow(0 18px 28px rgba(0,0,0,0.35))",
               transform: "translateY(-8px)",
             }}
@@ -1073,11 +1036,9 @@ export default function TestPage() {
         </div>
       ) : null}
 
-      {/* 🎇 RAKETEN-FEUERWERK (Canvas): Raketen fliegen hoch, dann Explosion */}
       {showFireworks ? <RocketsFireworksOverlay /> : null}
 
       <div style={{ width: "100%", maxWidth: 1100 }}>
-        {/* Header */}
         <div style={{ position: "relative", marginTop: 6 }}>
           {(screen === "VRM_V" || screen === "VRM_R") && isUserTurn ? (
             <div
@@ -1090,11 +1051,11 @@ export default function TestPage() {
                 gap: 8,
                 padding: "6px 10px",
                 borderRadius: 14,
-                background: "rgba(255,255,255,0.70)",
-                border: "1px solid rgba(0,0,0,0.10)",
-                boxShadow: "0 8px 0 rgba(0,0,0,0.08)",
+                background: theme.chipBg,
+                border: theme.chipBorder,
+                boxShadow: theme.smallShadow,
                 fontWeight: 900,
-                color: "rgba(0,0,0,0.75)",
+                color: theme.softText,
               }}
             >
               <span style={{ fontSize: 22, lineHeight: 1 }}>👉</span>
@@ -1112,10 +1073,12 @@ export default function TestPage() {
               fontWeight: 900,
               padding: "10px 14px",
               borderRadius: 14,
-              border: "2px solid rgba(0,0,0,0.15)",
-              background: "rgba(255,255,255,0.85)",
-              color: "#111",
-              boxShadow: "0 10px 0 rgba(0,0,0,0.10)",
+              border: isDark
+                ? "2px solid rgba(255,255,255,0.10)"
+                : "2px solid rgba(0,0,0,0.15)",
+              background: theme.buttonBg,
+              color: theme.text,
+              boxShadow: theme.smallShadow,
             }}
           >
             ⟵ Start
@@ -1127,10 +1090,11 @@ export default function TestPage() {
                 display: "inline-block",
                 padding: "6px 12px",
                 borderRadius: 999,
-                background: "rgba(255,255,255,0.75)",
-                border: "1px solid rgba(0,0,0,0.10)",
+                background: theme.chipBg,
+                border: theme.chipBorder,
                 fontWeight: 900,
                 letterSpacing: 1,
+                color: theme.text,
               }}
             >
               WNV · VRM
@@ -1138,34 +1102,34 @@ export default function TestPage() {
 
             <h1
               style={{
-                fontSize: 64,
+                fontSize: "clamp(34px, 8vw, 64px)",
                 fontWeight: 1000,
                 margin: "10px 0 6px",
                 letterSpacing: 2,
-                color: "#1b1b1b",
-                textShadow:
-                  "0 4px 0 rgba(255,255,255,0.7), 0 16px 30px rgba(0,0,0,0.12)",
+                color: theme.text,
+                textShadow: isDark
+                  ? "0 10px 24px rgba(0,0,0,0.35)"
+                  : "0 4px 0 rgba(255,255,255,0.7), 0 16px 30px rgba(0,0,0,0.12)",
               }}
             >
               {title}
             </h1>
 
-            <div style={{ fontWeight: 800, color: "rgba(0,0,0,0.65)" }}>
+            <div style={{ fontWeight: 800, color: theme.subText }}>
               Visueller Reaktionstest – Vorwärts & Rückwärts
             </div>
           </div>
         </div>
 
-        {/* Card */}
         <div
           style={{
             marginTop: 16,
             padding: 18,
             borderRadius: 26,
-            background: "rgba(255,255,255,0.86)",
-            border: "2px solid rgba(0,0,0,0.10)",
-            boxShadow:
-              "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
+            background: theme.cardBg,
+            border: theme.cardBorder,
+            boxShadow: theme.shadow,
+            backdropFilter: "blur(8px)",
           }}
         >
           <div
@@ -1178,7 +1142,7 @@ export default function TestPage() {
           >
             <div style={{ display: "grid", gap: 4 }}>
               <div style={{ fontWeight: 900 }}>Menü / Steuerung</div>
-              <div style={{ fontWeight: 700, color: "rgba(0,0,0,0.65)" }}>
+              <div style={{ fontWeight: 700, color: theme.subText }}>
                 Keine Speicherung. Nummern sind nur intern (Debug optional).
               </div>
             </div>
@@ -1200,7 +1164,6 @@ export default function TestPage() {
             </label>
           </div>
 
-          {/* MENU */}
           {screen === "MENU" ? (
             <div
               style={{
@@ -1216,7 +1179,7 @@ export default function TestPage() {
                   setScreen("VRM_V");
                   await startVRMV();
                 }}
-                style={menuBtnStyle}
+                style={menuBtnStyle(isDark)}
               >
                 VRM-V starten
               </button>
@@ -1227,7 +1190,7 @@ export default function TestPage() {
                   setScreen("VRM_R");
                   await startVRMR();
                 }}
-                style={menuBtnStyle}
+                style={menuBtnStyle(isDark)}
               >
                 VRM-R starten
               </button>
@@ -1235,7 +1198,7 @@ export default function TestPage() {
               <button
                 type="button"
                 onClick={() => setScreen("RESULTS")}
-                style={menuBtnStyle}
+                style={menuBtnStyle(isDark)}
               >
                 Ergebnisse
               </button>
@@ -1253,12 +1216,12 @@ export default function TestPage() {
               <button
                 type="button"
                 onClick={() => setScreen("MENU")}
-                style={smallBtnStyle}
+                style={smallBtnStyle(isDark)}
               >
                 ⟵ Menü
               </button>
 
-              <div style={{ fontWeight: 900, color: "rgba(0,0,0,0.7)" }}>
+              <div style={{ fontWeight: 900, color: theme.softText }}>
                 {screen === "RESULTS"
                   ? "Ergebnisseübersicht."
                   : screen === "VRM_V"
@@ -1270,7 +1233,7 @@ export default function TestPage() {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  style={{ ...smallBtnStyle, marginLeft: "auto" }}
+                  style={{ ...smallBtnStyle(isDark), marginLeft: "auto" }}
                 >
                   Als PDF speichern
                 </button>
@@ -1278,7 +1241,6 @@ export default function TestPage() {
             </div>
           )}
 
-          {/* BOARD */}
           {screen === "VRM_V" || screen === "VRM_R" ? (
             <div
               style={{
@@ -1289,13 +1251,15 @@ export default function TestPage() {
             >
               <div
                 style={{
-                  width: 860,
-                  height: 440,
+                  width: "min(100%, 860px)",
+                  aspectRatio: "860 / 440",
+                  minHeight: 240,
                   borderRadius: 24,
-                  background: "rgba(255,255,255,0.9)",
-                  border: "2px solid rgba(0,0,0,0.10)",
-                  boxShadow:
-                    "0 18px 0 rgba(0,0,0,0.12), 0 26px 44px rgba(0,0,0,0.12)",
+                  background: theme.boardBg,
+                  border: isDark
+                    ? "2px solid rgba(255,255,255,0.08)"
+                    : "2px solid rgba(0,0,0,0.10)",
+                  boxShadow: theme.shadow,
                   position: "relative",
                   overflow: "hidden",
                   padding: 18,
@@ -1319,6 +1283,7 @@ export default function TestPage() {
                       showDebugNumber={showDebugNumber}
                       disabled={!boardClickable}
                       onClick={boardClickHandler}
+                      isDark={isDark}
                     />
                   </div>
                 ))}
@@ -1326,39 +1291,44 @@ export default function TestPage() {
             </div>
           ) : null}
 
-          {/* RESULTS */}
           {screen === "RESULTS" ? (
             <div style={{ marginTop: 18, display: "grid", gap: 18 }}>
               <ResultTable
                 title="VRM-V"
                 rows16={tableV}
                 taskPointsFn={(t) => taskPoints(tableV, t)}
+                isDark={isDark}
               />
               <ScoreCards
                 labelMax="LVRM-V (Maximum = 9)"
                 valueMax={lvrmV}
                 labelSum="VRM-V Rohwertsumme (Maximum = 16)"
                 valueSum={sumV}
+                isDark={isDark}
               />
 
               <ResultTable
                 title="VRM-R"
                 rows16={tableR}
                 taskPointsFn={(t) => taskPoints(tableR, t)}
+                isDark={isDark}
               />
               <ScoreCards
                 labelMax="LVRM-R (Maximum = 9)"
                 valueMax={lvrmR}
                 labelSum="VRM-R Rohwertsumme (Maximum = 16)"
                 valueSum={sumR}
+                isDark={isDark}
               />
 
               <div
                 style={{
                   padding: 16,
                   borderRadius: 18,
-                  background: "rgba(255,255,255,0.85)",
-                  border: "2px solid rgba(0,0,0,0.12)",
+                  background: theme.innerBg,
+                  border: isDark
+                    ? "2px solid rgba(255,255,255,0.08)"
+                    : "2px solid rgba(0,0,0,0.12)",
                   fontWeight: 1000,
                   fontSize: 22,
                 }}
@@ -1378,18 +1348,28 @@ function ResultTable({
   title,
   rows16,
   taskPointsFn,
+  isDark,
 }: {
   title: string;
   rows16: AttemptRow[];
   taskPointsFn: (taskNo: number) => 0 | 1 | 2;
+  isDark: boolean;
 }) {
+  const border = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)";
+  const bg = isDark ? "rgba(30,41,59,0.88)" : "rgba(255,255,255,0.85)";
+  const text = isDark ? "#f8fafc" : "#111";
+  const emptyText = isDark ? "rgba(248,250,252,0.38)" : "rgba(0,0,0,0.35)";
+
   return (
     <div
       style={{
         padding: 16,
         borderRadius: 18,
-        background: "rgba(255,255,255,0.85)",
-        border: "2px solid rgba(0,0,0,0.12)",
+        background: bg,
+        border: isDark
+          ? "2px solid rgba(255,255,255,0.08)"
+          : "2px solid rgba(0,0,0,0.12)",
+        color: text,
       }}
     >
       <div style={{ fontWeight: 1000, fontSize: 22, marginBottom: 10 }}>
@@ -1406,26 +1386,22 @@ function ResultTable({
         >
           <thead>
             <tr>
-              {[
-                "Aufgabe",
-                "Versuch",
-                "Antwort",
-                "Punkte (Versuch)",
-                "Punkte (Aufgabe)",
-              ].map((h) => (
-                <th
-                  key={h}
-                  style={{
-                    textAlign: "left",
-                    padding: "10px 10px",
-                    borderBottom: "2px solid rgba(0,0,0,0.15)",
-                    fontWeight: 1000,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {h}
-                </th>
-              ))}
+              {["Aufgabe", "Gezeigt", "Antwort", "Punkte (Versuch)", "Punkte (Aufgabe)"].map(
+                (h) => (
+                  <th
+                    key={h}
+                    style={{
+                      textAlign: "left",
+                      padding: "10px 10px",
+                      borderBottom: `2px solid ${border}`,
+                      fontWeight: 1000,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {h}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
 
@@ -1441,7 +1417,7 @@ function ResultTable({
                       rowSpan={2}
                       style={{
                         padding: "10px 10px",
-                        borderBottom: "1px solid rgba(0,0,0,0.10)",
+                        borderBottom: `1px solid ${border}`,
                         fontWeight: 1000,
                         width: 70,
                         verticalAlign: "top",
@@ -1454,7 +1430,7 @@ function ResultTable({
                   <td
                     style={{
                       padding: "10px 10px",
-                      borderBottom: "1px solid rgba(0,0,0,0.10)",
+                      borderBottom: `1px solid ${border}`,
                       fontWeight: 800,
                       minWidth: 260,
                     }}
@@ -1465,10 +1441,10 @@ function ResultTable({
                   <td
                     style={{
                       padding: "10px 10px",
-                      borderBottom: "1px solid rgba(0,0,0,0.10)",
+                      borderBottom: `1px solid ${border}`,
                       minWidth: 260,
                       fontWeight: 800,
-                      color: r.answer.length ? "#111" : "rgba(0,0,0,0.35)",
+                      color: r.answer.length ? text : emptyText,
                     }}
                   >
                     {fmtSeq(r.answer)}
@@ -1477,7 +1453,7 @@ function ResultTable({
                   <td
                     style={{
                       padding: "10px 10px",
-                      borderBottom: "1px solid rgba(0,0,0,0.10)",
+                      borderBottom: `1px solid ${border}`,
                       fontWeight: 1000,
                       width: 140,
                     }}
@@ -1490,7 +1466,7 @@ function ResultTable({
                       rowSpan={2}
                       style={{
                         padding: "10px 10px",
-                        borderBottom: "1px solid rgba(0,0,0,0.10)",
+                        borderBottom: `1px solid ${border}`,
                         fontWeight: 1000,
                         width: 140,
                         verticalAlign: "top",
@@ -1514,24 +1490,40 @@ function ScoreCards({
   valueMax,
   labelSum,
   valueSum,
+  isDark,
 }: {
   labelMax: string;
   valueMax: number;
   labelSum: string;
   valueSum: number;
+  isDark: boolean;
 }) {
+  const cardBg = isDark ? "rgba(30,41,59,0.88)" : "rgba(255,255,255,0.85)";
+  const border = isDark
+    ? "2px solid rgba(255,255,255,0.08)"
+    : "2px solid rgba(0,0,0,0.12)";
+  const soft = isDark ? "rgba(248,250,252,0.75)" : "rgba(0,0,0,0.75)";
+  const text = isDark ? "#f8fafc" : "#111";
+
   return (
-    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+    <div
+      style={{
+        display: "grid",
+        gap: 12,
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      }}
+    >
       <div
         style={{
           padding: 16,
           borderRadius: 18,
-          background: "rgba(255,255,255,0.85)",
-          border: "2px solid rgba(0,0,0,0.12)",
+          background: cardBg,
+          border,
           fontWeight: 900,
+          color: text,
         }}
       >
-        <div style={{ opacity: 0.75, fontWeight: 900 }}>{labelMax}</div>
+        <div style={{ opacity: 0.75, fontWeight: 900, color: soft }}>{labelMax}</div>
         <div style={{ fontSize: 34, fontWeight: 1000 }}>{valueMax}</div>
       </div>
 
@@ -1539,35 +1531,46 @@ function ScoreCards({
         style={{
           padding: 16,
           borderRadius: 18,
-          background: "rgba(255,255,255,0.85)",
-          border: "2px solid rgba(0,0,0,0.12)",
+          background: cardBg,
+          border,
           fontWeight: 900,
+          color: text,
         }}
       >
-        <div style={{ opacity: 0.75, fontWeight: 900 }}>{labelSum}</div>
+        <div style={{ opacity: 0.75, fontWeight: 900, color: soft }}>{labelSum}</div>
         <div style={{ fontSize: 34, fontWeight: 1000 }}>{valueSum}</div>
       </div>
     </div>
   );
 }
 
-const menuBtnStyle: React.CSSProperties = {
+const menuBtnStyle = (isDark: boolean): React.CSSProperties => ({
   flex: "1 1 240px",
   padding: "14px 14px",
   borderRadius: 18,
-  border: "2px solid rgba(0,0,0,0.15)",
+  border: isDark
+    ? "2px solid rgba(255,255,255,0.10)"
+    : "2px solid rgba(0,0,0,0.15)",
   fontWeight: 1000,
-  background: "rgba(255,255,255,0.9)",
-  boxShadow: "0 12px 0 rgba(0,0,0,0.10)",
+  background: isDark ? "rgba(30,41,59,0.94)" : "rgba(255,255,255,0.9)",
+  color: isDark ? "#f8fafc" : "#111",
+  boxShadow: isDark
+    ? "0 12px 0 rgba(0,0,0,0.22)"
+    : "0 12px 0 rgba(0,0,0,0.10)",
   cursor: "pointer",
-};
+});
 
-const smallBtnStyle: React.CSSProperties = {
+const smallBtnStyle = (isDark: boolean): React.CSSProperties => ({
   padding: "12px 14px",
   borderRadius: 16,
-  border: "2px solid rgba(0,0,0,0.15)",
+  border: isDark
+    ? "2px solid rgba(255,255,255,0.10)"
+    : "2px solid rgba(0,0,0,0.15)",
   fontWeight: 900,
-  background: "rgba(255,255,255,0.9)",
-  boxShadow: "0 12px 0 rgba(0,0,0,0.10)",
+  background: isDark ? "rgba(30,41,59,0.94)" : "rgba(255,255,255,0.9)",
+  color: isDark ? "#f8fafc" : "#111",
+  boxShadow: isDark
+    ? "0 12px 0 rgba(0,0,0,0.22)"
+    : "0 12px 0 rgba(0,0,0,0.10)",
   cursor: "pointer",
-};
+});
