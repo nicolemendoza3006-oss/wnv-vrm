@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111111;
 
   --wnv-bg: linear-gradient(
     180deg,
@@ -21,22 +21,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b1120;
-    --foreground: #f3f4f6;
-
-    --wnv-bg: linear-gradient(
-      180deg,
-      #0f172a 0%,
-      #172033 35%,
-      #241b2f 60%,
-      #111827 85%,
-      #0b1120 100%
-    );
-  }
-}
-
 html {
   background: var(--background);
 }
@@ -49,7 +33,6 @@ body {
   min-height: 100vh;
 }
 
-/* Klasse für Seitenhintergrund */
 .wnv-bg {
   background-image: var(--wnv-bg);
   background-repeat: no-repeat;
@@ -57,7 +40,6 @@ body {
   background-attachment: fixed;
 }
 
-/* Mobile Feinschliff */
 @media (max-width: 768px) {
   .wnv-bg {
     background-attachment: scroll;

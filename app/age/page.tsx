@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 function pad2(n: number) {
   return String(n).padStart(2, "0");
@@ -33,19 +33,8 @@ export default function AgePage() {
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
-  const [isDark, setIsDark] = useState(false);
 
   const today = useMemo(() => new Date(), []);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateTheme = () => setIsDark(media.matches);
-
-    updateTheme();
-    media.addEventListener("change", updateTheme);
-
-    return () => media.removeEventListener("change", updateTheme);
-  }, []);
 
   const parsed = useMemo(() => {
     const d = Number(day);
@@ -83,33 +72,19 @@ export default function AgePage() {
     return { birth, age };
   }, [day, month, year, today]);
 
-  const theme = isDark
-    ? {
-        text: "#f8fafc",
-        subText: "rgba(248,250,252,0.78)",
-        cardBg: "rgba(17,24,39,0.88)",
-        cardBorder: "2px solid rgba(255,255,255,0.10)",
-        softCardBg: "rgba(30,41,59,0.88)",
-        buttonBg: "rgba(30,41,59,0.95)",
-        inputBg: "#0f172a",
-        inputText: "#f8fafc",
-        inputBorder: "2px solid rgba(255,255,255,0.14)",
-        shadow: "0 14px 0 rgba(0,0,0,0.28), 0 22px 36px rgba(0,0,0,0.35)",
-        smallShadow: "0 10px 0 rgba(0,0,0,0.22)",
-      }
-    : {
-        text: "#1b1b1b",
-        subText: "rgba(0,0,0,0.65)",
-        cardBg: "rgba(255,255,255,0.78)",
-        cardBorder: "2px solid rgba(0,0,0,0.12)",
-        softCardBg: "rgba(255,255,255,0.85)",
-        buttonBg: "rgba(255,255,255,0.9)",
-        inputBg: "#ffffff",
-        inputText: "#111111",
-        inputBorder: "2px solid rgba(0,0,0,0.15)",
-        shadow: "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
-        smallShadow: "0 10px 0 rgba(0,0,0,0.10)",
-      };
+  const theme = {
+    text: "#111111",
+    subText: "#111111",
+    cardBg: "rgba(255,255,255,0.78)",
+    cardBorder: "2px solid rgba(0,0,0,0.12)",
+    softCardBg: "rgba(255,255,255,0.85)",
+    buttonBg: "rgba(255,255,255,0.9)",
+    inputBg: "#ffffff",
+    inputText: "#111111",
+    inputBorder: "2px solid rgba(0,0,0,0.15)",
+    shadow: "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
+    smallShadow: "0 10px 0 rgba(0,0,0,0.10)",
+  };
 
   return (
     <main
@@ -185,7 +160,7 @@ export default function AgePage() {
           }}
         >
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <label style={{ display: "grid", gap: 6, fontWeight: 900 }}>
+            <label style={{ display: "grid", gap: 6, fontWeight: 900, color: "#111111" }}>
               Tag
               <input
                 inputMode="numeric"
@@ -208,7 +183,7 @@ export default function AgePage() {
               />
             </label>
 
-            <label style={{ display: "grid", gap: 6, fontWeight: 900 }}>
+            <label style={{ display: "grid", gap: 6, fontWeight: 900, color: "#111111" }}>
               Monat
               <input
                 inputMode="numeric"
@@ -231,7 +206,7 @@ export default function AgePage() {
               />
             </label>
 
-            <label style={{ display: "grid", gap: 6, fontWeight: 900 }}>
+            <label style={{ display: "grid", gap: 6, fontWeight: 900, color: "#111111" }}>
               Jahr
               <input
                 inputMode="numeric"
@@ -260,9 +235,7 @@ export default function AgePage() {
               padding: 14,
               borderRadius: 16,
               background: theme.softCardBg,
-              border: isDark
-                ? "1px solid rgba(255,255,255,0.08)"
-                : "1px solid rgba(0,0,0,0.10)",
+              border: "1px solid rgba(0,0,0,0.10)",
               fontWeight: 900,
               fontSize: 18,
               color: theme.text,
@@ -270,18 +243,18 @@ export default function AgePage() {
           >
             {parsed ? (
               <>
-                <div style={{ fontSize: 16, opacity: 0.78 }}>
+                <div style={{ fontSize: 16, color: "#111111" }}>
                   Geburtsdatum: {pad2(parsed.birth.getDate())}.
                   {pad2(parsed.birth.getMonth() + 1)}.
                   {parsed.birth.getFullYear()}
                 </div>
-                <div style={{ fontSize: 26, marginTop: 6 }}>
+                <div style={{ fontSize: 26, marginTop: 6, color: "#111111" }}>
                   {parsed.age.years} Jahre, {parsed.age.months} Monate,{" "}
                   {parsed.age.days} Tage
                 </div>
               </>
             ) : (
-              <div style={{ opacity: 0.78 }}>
+              <div style={{ color: "#111111" }}>
                 Bitte ein gültiges Geburtsdatum eingeben.
               </div>
             )}
@@ -313,5 +286,4 @@ export default function AgePage() {
       </div>
     </main>
   );
-}
 }

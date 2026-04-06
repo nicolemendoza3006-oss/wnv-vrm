@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 
 type Screen = "MENU" | "VRM_V" | "VRM_R" | "RESULTS";
 
@@ -36,14 +36,12 @@ function CubeButton({
   disabled,
   onClick,
   showDebugNumber,
-  isDark,
 }: {
   id: number;
   highlighted?: boolean;
   disabled?: boolean;
   onClick: (id: number) => void;
   showDebugNumber?: boolean;
-  isDark: boolean;
 }) {
   return (
     <button
@@ -72,8 +70,6 @@ function CubeButton({
             : "linear-gradient(180deg, #4fb1ff 0%, #167dff 55%, #0b55d8 100%)",
           border: highlighted
             ? "2px solid rgba(255,255,255,0.85)"
-            : isDark
-            ? "2px solid rgba(255,255,255,0.10)"
             : "2px solid rgba(0,0,0,0.12)",
           boxShadow: highlighted
             ? "0 0 0 6px rgba(255,255,255,0.30), 0 16px 0 rgba(0,0,0,0.16), 0 26px 40px rgba(0,0,0,0.22)"
@@ -351,51 +347,24 @@ function RocketsFireworksOverlay() {
 export default function TestPage() {
   const [screen, setScreen] = useState<Screen>("MENU");
   const [showDebugNumber, setShowDebugNumber] = useState(false);
-  const [isDark, setIsDark] = useState(false);
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateTheme = () => setIsDark(media.matches);
-    updateTheme();
-    media.addEventListener("change", updateTheme);
-    return () => media.removeEventListener("change", updateTheme);
-  }, []);
-
-  const theme = isDark
-    ? {
-        text: "#f8fafc",
-        subText: "rgba(248,250,252,0.72)",
-        softText: "rgba(248,250,252,0.82)",
-        chipBg: "rgba(15,23,42,0.82)",
-        chipBorder: "1px solid rgba(255,255,255,0.10)",
-        cardBg: "rgba(17,24,39,0.88)",
-        cardBorder: "2px solid rgba(255,255,255,0.08)",
-        innerBg: "rgba(30,41,59,0.88)",
-        buttonBg: "rgba(30,41,59,0.94)",
-        boardBg: "rgba(15,23,42,0.92)",
-        shadow: "0 14px 0 rgba(0,0,0,0.25), 0 22px 36px rgba(0,0,0,0.35)",
-        smallShadow: "0 10px 0 rgba(0,0,0,0.20)",
-        overlayBg: "rgba(0,0,0,0.35)",
-        tableBorder: "rgba(255,255,255,0.10)",
-        emptyText: "rgba(248,250,252,0.38)",
-      }
-    : {
-        text: "#1b1b1b",
-        subText: "rgba(0,0,0,0.65)",
-        softText: "rgba(0,0,0,0.75)",
-        chipBg: "rgba(255,255,255,0.75)",
-        chipBorder: "1px solid rgba(0,0,0,0.10)",
-        cardBg: "rgba(255,255,255,0.86)",
-        cardBorder: "2px solid rgba(0,0,0,0.10)",
-        innerBg: "rgba(255,255,255,0.90)",
-        buttonBg: "rgba(255,255,255,0.90)",
-        boardBg: "rgba(255,255,255,0.92)",
-        shadow: "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
-        smallShadow: "0 10px 0 rgba(0,0,0,0.10)",
-        overlayBg: "rgba(255,255,255,0.25)",
-        tableBorder: "rgba(0,0,0,0.10)",
-        emptyText: "rgba(0,0,0,0.35)",
-      };
+  const theme = {
+    text: "#111111",
+    subText: "#111111",
+    softText: "#111111",
+    chipBg: "rgba(255,255,255,0.75)",
+    chipBorder: "1px solid rgba(0,0,0,0.10)",
+    cardBg: "rgba(255,255,255,0.86)",
+    cardBorder: "2px solid rgba(0,0,0,0.10)",
+    innerBg: "rgba(255,255,255,0.90)",
+    buttonBg: "rgba(255,255,255,0.90)",
+    boardBg: "rgba(255,255,255,0.92)",
+    shadow: "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
+    smallShadow: "0 10px 0 rgba(0,0,0,0.10)",
+    overlayBg: "rgba(255,255,255,0.25)",
+    tableBorder: "rgba(0,0,0,0.10)",
+    emptyText: "rgba(0,0,0,0.35)",
+  };
 
   const positions = [
     { id: 1, left: 18, top: 16 },
@@ -490,9 +459,11 @@ export default function TestPage() {
   const [phaseV, setPhaseV] = useState<VrmPhase>("IDLE");
   const [msgV, setMsgV] = useState("");
   const [canClickV, setCanClickV] = useState(false);
+
   const [currentShownV, setCurrentShownV] = useState<number[]>([]);
   const [currentExpectedV, setCurrentExpectedV] = useState<number[]>([]);
   const [inputV, setInputV] = useState<number[]>([]);
+
   const [practiceIndexV, setPracticeIndexV] = useState(0);
   const [taskIndexV, setTaskIndexV] = useState(0);
   const [attemptIndexV, setAttemptIndexV] = useState<0 | 1>(0);
@@ -507,9 +478,11 @@ export default function TestPage() {
   const [phaseR, setPhaseR] = useState<VrmPhase>("IDLE");
   const [msgR, setMsgR] = useState("");
   const [canClickR, setCanClickR] = useState(false);
+
   const [currentShownR, setCurrentShownR] = useState<number[]>([]);
   const [currentExpectedR, setCurrentExpectedR] = useState<number[]>([]);
   const [inputR, setInputR] = useState<number[]>([]);
+
   const [practiceIndexR, setPracticeIndexR] = useState(0);
   const [taskIndexR, setTaskIndexR] = useState(0);
   const [attemptIndexR, setAttemptIndexR] = useState<0 | 1>(0);
@@ -1073,9 +1046,7 @@ export default function TestPage() {
               fontWeight: 900,
               padding: "10px 14px",
               borderRadius: 14,
-              border: isDark
-                ? "2px solid rgba(255,255,255,0.10)"
-                : "2px solid rgba(0,0,0,0.15)",
+              border: "2px solid rgba(0,0,0,0.15)",
               background: theme.buttonBg,
               color: theme.text,
               boxShadow: theme.smallShadow,
@@ -1107,9 +1078,7 @@ export default function TestPage() {
                 margin: "10px 0 6px",
                 letterSpacing: 2,
                 color: theme.text,
-                textShadow: isDark
-                  ? "0 10px 24px rgba(0,0,0,0.35)"
-                  : "0 4px 0 rgba(255,255,255,0.7), 0 16px 30px rgba(0,0,0,0.12)",
+                textShadow: "0 4px 0 rgba(255,255,255,0.7), 0 16px 30px rgba(0,0,0,0.12)",
               }}
             >
               {title}
@@ -1141,8 +1110,8 @@ export default function TestPage() {
             }}
           >
             <div style={{ display: "grid", gap: 4 }}>
-              <div style={{ fontWeight: 900 }}>Menü / Steuerung</div>
-              <div style={{ fontWeight: 700, color: theme.subText }}>
+              <div style={{ fontWeight: 900, color: "#111111" }}>Menü / Steuerung</div>
+              <div style={{ fontWeight: 700, color: "#111111" }}>
                 Keine Speicherung. Nummern sind nur intern (Debug optional).
               </div>
             </div>
@@ -1153,6 +1122,7 @@ export default function TestPage() {
                 gap: 8,
                 alignItems: "center",
                 fontWeight: 900,
+                color: "#111111",
               }}
             >
               <input
@@ -1179,7 +1149,7 @@ export default function TestPage() {
                   setScreen("VRM_V");
                   await startVRMV();
                 }}
-                style={menuBtnStyle(isDark)}
+                style={menuBtnStyle()}
               >
                 VRM-V starten
               </button>
@@ -1190,7 +1160,7 @@ export default function TestPage() {
                   setScreen("VRM_R");
                   await startVRMR();
                 }}
-                style={menuBtnStyle(isDark)}
+                style={menuBtnStyle()}
               >
                 VRM-R starten
               </button>
@@ -1198,7 +1168,7 @@ export default function TestPage() {
               <button
                 type="button"
                 onClick={() => setScreen("RESULTS")}
-                style={menuBtnStyle(isDark)}
+                style={menuBtnStyle()}
               >
                 Ergebnisse
               </button>
@@ -1216,12 +1186,12 @@ export default function TestPage() {
               <button
                 type="button"
                 onClick={() => setScreen("MENU")}
-                style={smallBtnStyle(isDark)}
+                style={smallBtnStyle()}
               >
                 ⟵ Menü
               </button>
 
-              <div style={{ fontWeight: 900, color: theme.softText }}>
+              <div style={{ fontWeight: 900, color: "#111111" }}>
                 {screen === "RESULTS"
                   ? "Ergebnisseübersicht."
                   : screen === "VRM_V"
@@ -1233,7 +1203,7 @@ export default function TestPage() {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  style={{ ...smallBtnStyle(isDark), marginLeft: "auto" }}
+                  style={{ ...smallBtnStyle(), marginLeft: "auto" }}
                 >
                   Als PDF speichern
                 </button>
@@ -1256,9 +1226,7 @@ export default function TestPage() {
                   minHeight: 240,
                   borderRadius: 24,
                   background: theme.boardBg,
-                  border: isDark
-                    ? "2px solid rgba(255,255,255,0.08)"
-                    : "2px solid rgba(0,0,0,0.10)",
+                  border: "2px solid rgba(0,0,0,0.10)",
                   boxShadow: theme.shadow,
                   position: "relative",
                   overflow: "hidden",
@@ -1283,7 +1251,6 @@ export default function TestPage() {
                       showDebugNumber={showDebugNumber}
                       disabled={!boardClickable}
                       onClick={boardClickHandler}
-                      isDark={isDark}
                     />
                   </div>
                 ))}
@@ -1297,28 +1264,24 @@ export default function TestPage() {
                 title="VRM-V"
                 rows16={tableV}
                 taskPointsFn={(t) => taskPoints(tableV, t)}
-                isDark={isDark}
               />
               <ScoreCards
                 labelMax="LVRM-V (Maximum = 9)"
                 valueMax={lvrmV}
                 labelSum="VRM-V Rohwertsumme (Maximum = 16)"
                 valueSum={sumV}
-                isDark={isDark}
               />
 
               <ResultTable
                 title="VRM-R"
                 rows16={tableR}
                 taskPointsFn={(t) => taskPoints(tableR, t)}
-                isDark={isDark}
               />
               <ScoreCards
                 labelMax="LVRM-R (Maximum = 9)"
                 valueMax={lvrmR}
                 labelSum="VRM-R Rohwertsumme (Maximum = 16)"
                 valueSum={sumR}
-                isDark={isDark}
               />
 
               <div
@@ -1326,11 +1289,10 @@ export default function TestPage() {
                   padding: 16,
                   borderRadius: 18,
                   background: theme.innerBg,
-                  border: isDark
-                    ? "2px solid rgba(255,255,255,0.08)"
-                    : "2px solid rgba(0,0,0,0.12)",
+                  border: "2px solid rgba(0,0,0,0.12)",
                   fontWeight: 1000,
                   fontSize: 22,
+                  color: "#111111",
                 }}
               >
                 Gesamtrohwert VRM (Maximum = 32):{" "}
@@ -1348,17 +1310,15 @@ function ResultTable({
   title,
   rows16,
   taskPointsFn,
-  isDark,
 }: {
   title: string;
   rows16: AttemptRow[];
   taskPointsFn: (taskNo: number) => 0 | 1 | 2;
-  isDark: boolean;
 }) {
-  const border = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)";
-  const bg = isDark ? "rgba(30,41,59,0.88)" : "rgba(255,255,255,0.85)";
-  const text = isDark ? "#f8fafc" : "#111";
-  const emptyText = isDark ? "rgba(248,250,252,0.38)" : "rgba(0,0,0,0.35)";
+  const border = "rgba(0,0,0,0.10)";
+  const bg = "rgba(255,255,255,0.85)";
+  const text = "#111111";
+  const emptyText = "rgba(0,0,0,0.35)";
 
   return (
     <div
@@ -1366,9 +1326,7 @@ function ResultTable({
         padding: 16,
         borderRadius: 18,
         background: bg,
-        border: isDark
-          ? "2px solid rgba(255,255,255,0.08)"
-          : "2px solid rgba(0,0,0,0.12)",
+        border: "2px solid rgba(0,0,0,0.12)",
         color: text,
       }}
     >
@@ -1396,6 +1354,7 @@ function ResultTable({
                       borderBottom: `2px solid ${border}`,
                       fontWeight: 1000,
                       whiteSpace: "nowrap",
+                      color: "#111111",
                     }}
                   >
                     {h}
@@ -1421,6 +1380,7 @@ function ResultTable({
                         fontWeight: 1000,
                         width: 70,
                         verticalAlign: "top",
+                        color: "#111111",
                       }}
                     >
                       {r.taskNo}
@@ -1433,6 +1393,7 @@ function ResultTable({
                       borderBottom: `1px solid ${border}`,
                       fontWeight: 800,
                       minWidth: 260,
+                      color: "#111111",
                     }}
                   >
                     {fmtSeq(r.shown)}
@@ -1456,6 +1417,7 @@ function ResultTable({
                       borderBottom: `1px solid ${border}`,
                       fontWeight: 1000,
                       width: 140,
+                      color: "#111111",
                     }}
                   >
                     {r.pointsAttempt}
@@ -1470,6 +1432,7 @@ function ResultTable({
                         fontWeight: 1000,
                         width: 140,
                         verticalAlign: "top",
+                        color: "#111111",
                       }}
                     >
                       {pointsTask}
@@ -1490,20 +1453,16 @@ function ScoreCards({
   valueMax,
   labelSum,
   valueSum,
-  isDark,
 }: {
   labelMax: string;
   valueMax: number;
   labelSum: string;
   valueSum: number;
-  isDark: boolean;
 }) {
-  const cardBg = isDark ? "rgba(30,41,59,0.88)" : "rgba(255,255,255,0.85)";
-  const border = isDark
-    ? "2px solid rgba(255,255,255,0.08)"
-    : "2px solid rgba(0,0,0,0.12)";
-  const soft = isDark ? "rgba(248,250,252,0.75)" : "rgba(0,0,0,0.75)";
-  const text = isDark ? "#f8fafc" : "#111";
+  const cardBg = "rgba(255,255,255,0.85)";
+  const border = "2px solid rgba(0,0,0,0.12)";
+  const soft = "#111111";
+  const text = "#111111";
 
   return (
     <div
@@ -1523,7 +1482,7 @@ function ScoreCards({
           color: text,
         }}
       >
-        <div style={{ opacity: 0.75, fontWeight: 900, color: soft }}>{labelMax}</div>
+        <div style={{ opacity: 1, fontWeight: 900, color: soft }}>{labelMax}</div>
         <div style={{ fontSize: 34, fontWeight: 1000 }}>{valueMax}</div>
       </div>
 
@@ -1537,40 +1496,32 @@ function ScoreCards({
           color: text,
         }}
       >
-        <div style={{ opacity: 0.75, fontWeight: 900, color: soft }}>{labelSum}</div>
+        <div style={{ opacity: 1, fontWeight: 900, color: soft }}>{labelSum}</div>
         <div style={{ fontSize: 34, fontWeight: 1000 }}>{valueSum}</div>
       </div>
     </div>
   );
 }
 
-const menuBtnStyle = (isDark: boolean): React.CSSProperties => ({
+const menuBtnStyle = (): React.CSSProperties => ({
   flex: "1 1 240px",
   padding: "14px 14px",
   borderRadius: 18,
-  border: isDark
-    ? "2px solid rgba(255,255,255,0.10)"
-    : "2px solid rgba(0,0,0,0.15)",
+  border: "2px solid rgba(0,0,0,0.15)",
   fontWeight: 1000,
-  background: isDark ? "rgba(30,41,59,0.94)" : "rgba(255,255,255,0.9)",
-  color: isDark ? "#f8fafc" : "#111",
-  boxShadow: isDark
-    ? "0 12px 0 rgba(0,0,0,0.22)"
-    : "0 12px 0 rgba(0,0,0,0.10)",
+  background: "rgba(255,255,255,0.9)",
+  color: "#111111",
+  boxShadow: "0 12px 0 rgba(0,0,0,0.10)",
   cursor: "pointer",
 });
 
-const smallBtnStyle = (isDark: boolean): React.CSSProperties => ({
+const smallBtnStyle = (): React.CSSProperties => ({
   padding: "12px 14px",
   borderRadius: 16,
-  border: isDark
-    ? "2px solid rgba(255,255,255,0.10)"
-    : "2px solid rgba(0,0,0,0.15)",
+  border: "2px solid rgba(0,0,0,0.15)",
   fontWeight: 900,
-  background: isDark ? "rgba(30,41,59,0.94)" : "rgba(255,255,255,0.9)",
-  color: isDark ? "#f8fafc" : "#111",
-  boxShadow: isDark
-    ? "0 12px 0 rgba(0,0,0,0.22)"
-    : "0 12px 0 rgba(0,0,0,0.10)",
+  background: "rgba(255,255,255,0.9)",
+  color: "#111111",
+  boxShadow: "0 12px 0 rgba(0,0,0,0.10)",
   cursor: "pointer",
 });
