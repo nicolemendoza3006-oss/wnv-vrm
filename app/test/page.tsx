@@ -496,6 +496,54 @@ export default function TestPage() {
 
   const TASKS_R = useMemo(() => TASKS_V.map((pair) => [pair[1], pair[0]]), []);
 
+  const isTestControlVisible =
+    (screen === "VRM_V" && (phaseV === "TEST_SHOW" || phaseV === "TEST_INPUT")) ||
+    (screen === "VRM_R" && (phaseR === "TEST_SHOW" || phaseR === "TEST_INPUT"));
+
+  async function showPreparedTestSequence() {
+    if (screen === "VRM_V" && phaseV === "TEST_SHOW" && currentShownV.length > 0) {
+      setCanClickV(false);
+      setInputV([]);
+      await showSequence(currentShownV);
+      setPhaseV("TEST_INPUT");
+      setMsgV(`Aufgabe ${taskIndexV + 1}, Versuch ${attemptIndexV + 1}: Bitte nachklicken.`);
+      setCanClickV(true);
+    }
+
+    if (screen === "VRM_R" && phaseR === "TEST_SHOW" && currentShownR.length > 0) {
+      setCanClickR(false);
+      setInputR([]);
+      await showSequence(currentShownR);
+      setPhaseR("TEST_INPUT");
+      setMsgR(
+        `Aufgabe ${taskIndexR + 1}, Versuch ${attemptIndexR + 1}: Bitte rückwärts nachklicken.`
+      );
+      setCanClickR(true);
+    }
+  }
+
+  async function repeatTestSequence() {
+    if (screen === "VRM_V" && currentShownV.length > 0 && (phaseV === "TEST_SHOW" || phaseV === "TEST_INPUT")) {
+      setCanClickV(false);
+      setInputV([]);
+      await showSequence(currentShownV);
+      setPhaseV("TEST_INPUT");
+      setMsgV(`Aufgabe ${taskIndexV + 1}, Versuch ${attemptIndexV + 1}: Bitte nachklicken.`);
+      setCanClickV(true);
+    }
+
+    if (screen === "VRM_R" && currentShownR.length > 0 && (phaseR === "TEST_SHOW" || phaseR === "TEST_INPUT")) {
+      setCanClickR(false);
+      setInputR([]);
+      await showSequence(currentShownR);
+      setPhaseR("TEST_INPUT");
+      setMsgR(
+        `Aufgabe ${taskIndexR + 1}, Versuch ${attemptIndexR + 1}: Bitte rückwärts nachklicken.`
+      );
+      setCanClickR(true);
+    }
+  }
+
   async function startVRMV() {
     seqLockRef.current++;
     outcomeVRef.current = {};
@@ -539,19 +587,15 @@ export default function TestPage() {
 
   async function startTestAttemptV(tIndex: number, aIndex: 0 | 1) {
     setPhaseV("TEST_SHOW");
-    setMsgV(`Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1} wird gezeigt…`);
+    setMsgV(
+      `Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1} ist bereit. Bitte „Nächste Aufgabe zeigen“ drücken.`
+    );
     setCanClickV(false);
     setInputV([]);
 
     const shown = TASKS_V[tIndex][aIndex];
     setCurrentShownV(shown);
     setCurrentExpectedV(shown);
-
-    await showSequence(shown);
-
-    setPhaseV("TEST_INPUT");
-    setMsgV(`Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1}: Bitte nachklicken.`);
-    setCanClickV(true);
   }
 
   async function finishVRMV(reason: string) {
@@ -727,19 +771,15 @@ export default function TestPage() {
 
   async function startTestAttemptR(tIndex: number, aIndex: 0 | 1) {
     setPhaseR("TEST_SHOW");
-    setMsgR(`Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1} wird gezeigt…`);
+    setMsgR(
+      `Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1} ist bereit. Bitte „Nächste Aufgabe zeigen“ drücken.`
+    );
     setCanClickR(false);
     setInputR([]);
 
     const shown = TASKS_R[tIndex][aIndex];
     setCurrentShownR(shown);
     setCurrentExpectedR(reverseCopy(shown));
-
-    await showSequence(shown);
-
-    setPhaseR("TEST_INPUT");
-    setMsgR(`Aufgabe ${tIndex + 1}, Versuch ${aIndex + 1}: Bitte rückwärts nachklicken.`);
-    setCanClickR(true);
   }
 
   async function finishVRMR(reason: string) {
@@ -1198,6 +1238,26 @@ export default function TestPage() {
                   ? msgV
                   : msgR}
               </div>
+
+              {isTestControlVisible ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPreparedTestSequence}
+                    style={smallBtnStyle()}
+                  >
+                    Nächste Aufgabe zeigen
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={repeatTestSequence}
+                    style={smallBtnStyle()}
+                  >
+                    Wiederholen
+                  </button>
+                </>
+              ) : null}
 
               {screen === "RESULTS" ? (
                 <button
