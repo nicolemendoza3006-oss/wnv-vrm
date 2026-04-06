@@ -1012,8 +1012,6 @@ export default function TestPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        backgroundImage:
-          "linear-gradient(180deg, #bfe9ff 0%, #ffe7b8 35%, #ffd1dc 60%, #fff6d6 85%, #ffffff 100%)",
       }}
     >
       <style>{`
@@ -1164,7 +1162,7 @@ export default function TestPage() {
             marginTop: 16,
             padding: 18,
             borderRadius: 26,
-            background: "rgba(255,255,255,0.78)",
+            background: "rgba(255,255,255,0.86)",
             border: "2px solid rgba(0,0,0,0.10)",
             boxShadow:
               "0 14px 0 rgba(0,0,0,0.10), 0 22px 36px rgba(0,0,0,0.12)",
